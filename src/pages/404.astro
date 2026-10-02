@@ -1,0 +1,34 @@
+---
+import Base from '../layouts/Base.astro';
+import Ikon from '../components/Ikon.astro';
+import { whatsapp, kategorileriGetir } from '../lib/site';
+
+const kategoriler = await kategorileriGetir();
+---
+
+<Base baslik="Sayfa bulunamadı | Ay Peyzaj" aciklama="Aradığınız sayfa bulunamadı. Kategorilerimize göz atın veya WhatsApp'tan bize yazın." noindex>
+  <section class="bolum">
+    <div class="kapsayici">
+      <h1>Aradığınız sayfa bulunamadı</h1>
+      <p class="giris">Sayfa taşınmış ya da kaldırılmış olabilir. Aşağıdaki kategorilerden devam edebilir veya bize WhatsApp'tan yazabilirsiniz.</p>
+      <ul class="kategoriler">
+        {kategoriler.map((k) => <li><a class="buton buton--cizgi" href={`/cesitlerimiz/${k.id}`}>{k.data.ad}</a></li>)}
+      </ul>
+      <div class="butonlar">
+        <a class="buton buton--whatsapp buton--buyuk" href={whatsapp()} rel="noopener" target="_blank"><Ikon ad="whatsapp" /> WhatsApp'tan Yazın</a>
+        <a class="buton buton--ana buton--buyuk" href="/">Ana Sayfa</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .kategoriler {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0 2rem;
+  }
+</style>

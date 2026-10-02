@@ -1,0 +1,53 @@
+---
+const adimlar = [
+  { ad: 'Keşif ve Analiz', metin: 'Tasarıma başlamadan önce ihtiyaçlar, istekler ve beklentiler yerinde incelenir.' },
+  { ad: 'Tasarım Geliştirme', metin: 'Keşifte elde edilen bilgilerle peyzaj tasarımı geliştirilir.' },
+  { ad: 'Tasarım Uygulama', metin: 'Onaylanan tasarım peyzaj ekibi tarafından hayata geçirilir.' },
+  { ad: 'Bakım ve İlerleme', metin: 'Uygulama sonrası peyzajın uzun vadeli bakımı sürdürülür.' },
+];
+---
+
+<ol class="surec">
+  {
+    adimlar.map((a, i) => (
+      <li>
+        <span class="surec__no">{i + 1}</span>
+        <h3>{a.ad}</h3>
+        <p>{a.metin}</p>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .surec {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: 1.25rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .surec li {
+    background: #fff;
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    border: 1px solid var(--cizgi);
+  }
+  .surec__no {
+    display: inline-flex;
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--sari-500);
+    color: var(--metin);
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+  .surec p {
+    margin: 0;
+    color: var(--metin-soluk);
+  }
+</style>

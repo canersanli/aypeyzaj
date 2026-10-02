@@ -1,0 +1,219 @@
+---
+import { Picture } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import Ikon from '../components/Ikon.astro';
+import HizmetKart from '../components/HizmetKart.astro';
+import ProjeKart from '../components/ProjeKart.astro';
+import Surec from '../components/Surec.astro';
+import IletisimBandi from '../components/IletisimBandi.astro';
+import heroGorsel from '../assets/hero.jpg';
+import hero from '../data/hero.json';
+import { firma, whatsapp, hizmetleriGetir, projeleriGetir, kategorileriGetir } from '../lib/site';
+
+const hizmetler = await hizmetleriGetir();
+const projeler = (await projeleriGetir()).filter((p) => p.data.one_cikan);
+const kategoriler = await kategorileriGetir();
+---
+
+<Base
+  baslik="Ay Peyzaj ve Çiçekçilik | Bartın Çiçekçi ve Peyzaj"
+  aciklama="Bartın'da peyzaj tasarımı, bahçe bakımı, çim uygulaması; çiçek, fidan, salon bitkisi ve saksı çeşitleri. Bilgi ve sipariş için WhatsApp'tan yazın."
+>
+  <section class="hero">
+    <Picture
+      src={heroGorsel}
+      alt={hero.gorsel_alt}
+      formats={['avif', 'webp']}
+      widths={[640, 960, 1280, 1600, 2000]}
+      sizes="100vw"
+      loading="eager"
+      fetchpriority="high"
+      class="hero__gorsel"
+    />
+    <div class="hero__ortu"></div>
+    <div class="kapsayici hero__ic">
+      <h1>Bartın'da peyzaj, çiçek ve fidan</h1>
+      <p class="hero__slogan">{firma.slogan}</p>
+      <p class="hero__metin">
+        Bahçenizi birlikte tasarlıyor, uyguluyor ve bakımını üstleniyoruz. Ağaç, fidan, çiçek ve salon bitkisi çeşitlerimizi kataloğumuzda inceleyebilirsiniz.
+      </p>
+      <div class="butonlar">
+        <a class="buton buton--whatsapp buton--buyuk" href={whatsapp()} rel="noopener" target="_blank">
+          <Ikon ad="whatsapp" /> WhatsApp'tan Yazın
+        </a>
+        <a class="buton buton--buyuk hero__ikincil" href="/cesitlerimiz">Kataloğa Göz At <Ikon ad="ok" /></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="bolum" aria-labelledby="hizmetler-baslik">
+    <div class="kapsayici">
+      <div class="bolum__baslik">
+        <h2 id="hizmetler-baslik">Hizmetlerimiz</h2>
+        <a href="/hizmetlerimiz">Tüm hizmetler</a>
+      </div>
+      <div class="izgara izgara--genis">
+        {hizmetler.map((h) => <HizmetKart hizmet={h} />)}
+      </div>
+    </div>
+  </section>
+
+  {
+    projeler.length > 0 && (
+      <section class="bolum bolum--acik" aria-labelledby="projeler-baslik">
+        <div class="kapsayici">
+          <div class="bolum__baslik">
+            <h2 id="projeler-baslik">Projelerimizden</h2>
+            <a href="/galeri">Galeriye git</a>
+          </div>
+          <div class="izgara izgara--genis">
+            {projeler.map((p) => <ProjeKart proje={p} />)}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="bolum" aria-labelledby="katalog-baslik">
+    <div class="kapsayici">
+      <div class="bolum__baslik">
+        <h2 id="katalog-baslik">Çeşitlerimiz</h2>
+        <a href="/cesitlerimiz">Tüm katalog</a>
+      </div>
+      <ul class="kategori-izgara">
+        {
+          kategoriler.map((k) => (
+            <li>
+              <a href={`/cesitlerimiz/${k.id}`} class="kategori-kart">
+                {k.data.gorsel && (
+                  <Picture
+                    src={k.data.gorsel}
+                    alt=""
+                    formats={['avif', 'webp']}
+                    widths={[320, 480, 640]}
+                    sizes="(max-width: 600px) 50vw, 280px"
+                    loading="lazy"
+                  />
+                )}
+                <span>{k.data.ad}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="bolum bolum--acik" aria-labelledby="surec-baslik">
+    <div class="kapsayici">
+      <h2 id="surec-baslik">Nasıl çalışıyoruz?</h2>
+      <Surec />
+    </div>
+  </section>
+
+  <IletisimBandi />
+</Base>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: clamp(460px, 72vh, 680px);
+    display: flex;
+    align-items: flex-end;
+    color: #fff;
+    overflow: hidden;
+  }
+  .hero :global(.hero__gorsel),
+  .hero :global(picture) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .hero :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .hero__ortu {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgb(20 28 10 / 0.15) 0%, rgb(20 28 10 / 0.55) 45%, rgb(20 28 10 / 0.85) 100%);
+  }
+  .hero__ic {
+    position: relative;
+    padding-block: 3rem 3.5rem;
+  }
+  .hero h1 {
+    color: #fff;
+    max-width: 16ch;
+    margin-bottom: 0.3em;
+  }
+  .hero__slogan {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(1.15rem, 1rem + 0.8vw, 1.5rem);
+    color: var(--sari-500);
+    margin-bottom: 0.6rem;
+  }
+  .hero__metin {
+    max-width: 52ch;
+    font-size: 1.08rem;
+    margin-bottom: 1.5rem;
+  }
+  .hero__ikincil {
+    background: #fff;
+    color: var(--yesil-900);
+  }
+  .hero__ikincil:hover {
+    background: var(--yesil-100);
+    color: var(--yesil-900);
+  }
+
+  .kategori-izgara {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+  }
+  .kategori-kart {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--yesil-700);
+    text-decoration: none;
+    color: #fff;
+  }
+  .kategori-kart :global(picture),
+  .kategori-kart :global(img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.25s ease;
+  }
+  .kategori-kart:hover :global(img) {
+    transform: scale(1.04);
+  }
+  .kategori-kart::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 40%, rgb(20 28 10 / 0.8));
+  }
+  .kategori-kart span {
+    position: relative;
+    z-index: 1;
+    padding: 1rem;
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 1.25rem;
+    line-height: 1.2;
+  }
+</style>

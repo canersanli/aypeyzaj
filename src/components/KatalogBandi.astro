@@ -1,0 +1,56 @@
+---
+// 7 ana kategori: katalog sayfalarında her zaman görünen yatay bant
+import { kategorileriGetir } from '../lib/site';
+
+interface Props {
+  aktif?: string;
+}
+const { aktif } = Astro.props;
+const kategoriler = await kategorileriGetir();
+---
+
+<nav class="katalog-bandi" aria-label="Katalog kategorileri">
+  <ul class="kapsayici">
+    {
+      kategoriler.map((k) => (
+        <li>
+          <a href={`/cesitlerimiz/${k.id}`} aria-current={aktif === k.id ? 'page' : undefined}>
+            {k.data.ad}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<style>
+  .katalog-bandi {
+    background: var(--yesil-100);
+    border-bottom: 1px solid var(--cizgi);
+  }
+  .katalog-bandi ul {
+    display: flex;
+    gap: 0.25rem;
+    list-style: none;
+    margin-block: 0;
+    padding: 0;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+  .katalog-bandi a {
+    display: block;
+    white-space: nowrap;
+    padding: 0.85rem 0.9rem;
+    text-decoration: none;
+    color: var(--yesil-900);
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-bottom: 3px solid transparent;
+  }
+  .katalog-bandi a:hover {
+    color: var(--yesil-700);
+  }
+  .katalog-bandi a[aria-current='page'] {
+    border-bottom-color: var(--sari-500);
+  }
+</style>

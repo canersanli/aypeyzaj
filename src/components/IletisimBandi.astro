@@ -1,0 +1,79 @@
+---
+import Ikon from './Ikon.astro';
+import { firma, whatsapp } from '../lib/site';
+
+interface Props {
+  baslik?: string;
+}
+const { baslik = 'Bize ulaşın' } = Astro.props;
+---
+
+<section class="iletisim-bandi" aria-labelledby="iletisim-bandi-baslik">
+  <div class="kapsayici iletisim-bandi__ic">
+    <div>
+      <h2 id="iletisim-bandi-baslik">{baslik}</h2>
+      <p class="iletisim-bandi__adres"><Ikon ad="konum" /> {firma.adres}</p>
+      <p>
+        <a href={firma.harita} rel="noopener" target="_blank">Google Haritalar'da yol tarifi al</a>
+      </p>
+      {firma.calisma_saatleri && <p>Çalışma saatleri: {firma.calisma_saatleri}</p>}
+    </div>
+    <div class="iletisim-bandi__eylemler">
+      <a class="buton buton--whatsapp buton--buyuk" href={whatsapp()} rel="noopener" target="_blank">
+        <Ikon ad="whatsapp" /> WhatsApp'tan Yazın
+      </a>
+      <a class="buton buton--cizgi" href={`tel:${firma.cep_tel}`}><Ikon ad="telefon" /> {firma.cep}</a>
+      <a class="buton buton--cizgi" href={`tel:${firma.sabit_tel}`}><Ikon ad="telefon" /> {firma.sabit}</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .iletisim-bandi {
+    background: var(--yesil-700);
+    color: #fff;
+    padding-block: 3rem;
+  }
+  .iletisim-bandi h2 {
+    color: #fff;
+  }
+  .iletisim-bandi a:not(.buton) {
+    color: #fff;
+  }
+  .iletisim-bandi__ic {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: 1.2fr 1fr;
+    align-items: center;
+  }
+  .iletisim-bandi__adres {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+    font-size: 1.1rem;
+  }
+  .iletisim-bandi__adres :global(svg) {
+    width: 1.3rem;
+    height: 1.3rem;
+    flex: none;
+    margin-top: 0.2rem;
+  }
+  .iletisim-bandi__eylemler {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .iletisim-bandi .buton--cizgi {
+    color: #fff;
+  }
+  .iletisim-bandi .buton--cizgi:hover {
+    background: #fff;
+    color: var(--yesil-900);
+    border-color: #fff;
+  }
+  @media (max-width: 760px) {
+    .iletisim-bandi__ic {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

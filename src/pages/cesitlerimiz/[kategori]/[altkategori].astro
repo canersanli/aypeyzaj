@@ -1,0 +1,38 @@
+---
+import Base from '../../../layouts/Base.astro';
+import KatalogBandi from '../../../components/KatalogBandi.astro';
+import KatalogListesi from '../../../components/KatalogListesi.astro';
+import { kategorileriGetir, urunleriGetir, type Kategori, type Urun } from '../../../lib/site';
+
+export async function getStaticPaths() {
+  const kategoriler = await kategorileriGetir();
+  const urunler = await urunleriGetir();
+  return kategoriler.flatMap((kategori) =>
+    (kategori.data.altkategoriler ?? []).map((altkategori) => ({
+      params: { kategori: kategori.id, altkategori: altkategori.slug },
+      props: {
+        kategori,
+        altkategori,
+        urunler: urunler.filter((u) => u.data.kategori === kategori.id && u.data.altkategori === altkategori.slug),
+      },
+    })),
+  );
+}
+
+interface Props {
+  kategori: Kategori;
+  altkategori: { ad: string; slug: string; giris: string };
+  urunler: Urun[];
+}
+const { kategori, altkategori, urunler } = Astro.props;
+---
+
+<Base
+  baslik={`${altkategori.ad} — Bartın ${kategori.data.ad} | Ay Peyzaj`}
+  aciklama={`${altkategori.giris} Bartın'da Ay Peyzaj; bilgi için WhatsApp'tan yazın.`}
+  noindex={urunler.length === 0}
+  ogGorsel={kategori.data.gorsel}
+>
+  <KatalogBandi aktif={kategori.id} />
+  <KatalogListesi kategori={kategori} altkategori={altkategori} urunler={urunler} />
+</Base>

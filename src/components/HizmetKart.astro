@@ -1,0 +1,49 @@
+---
+import Ikon from './Ikon.astro';
+import type { Hizmet } from '../lib/site';
+
+interface Props {
+  hizmet: Hizmet;
+}
+const { hizmet } = Astro.props;
+---
+
+<article class="hizmet-kart">
+  <span class="hizmet-kart__ikon"><Ikon ad={hizmet.data.ikon} /></span>
+  <h3>{hizmet.data.ad}</h3>
+  <p>{hizmet.data.kisa}</p>
+  <a href={`/hizmetlerimiz/${hizmet.id}`}>Detaylı bilgi<span class="gorunmez">: {hizmet.data.ad}</span></a>
+</article>
+
+<style>
+  .hizmet-kart {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border: 1px solid var(--cizgi);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+  }
+  .hizmet-kart__ikon {
+    display: inline-flex;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    background: var(--yesil-100);
+    color: var(--yesil-700);
+    margin-bottom: 1rem;
+  }
+  .hizmet-kart__ikon :global(svg) {
+    width: 28px;
+    height: 28px;
+  }
+  .hizmet-kart p {
+    color: var(--metin-soluk);
+    flex: 1;
+  }
+  .hizmet-kart a {
+    font-weight: 600;
+  }
+</style>

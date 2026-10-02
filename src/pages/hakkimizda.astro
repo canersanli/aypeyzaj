@@ -1,0 +1,36 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import Surec from '../components/Surec.astro';
+import IletisimBandi from '../components/IletisimBandi.astro';
+import { firma } from '../lib/site';
+---
+
+<Base
+  baslik="Hakkımızda | Ay Peyzaj ve Çiçekçilik Bartın"
+  aciklama="Ay Peyzaj ve Çiçekçilik: Bartın'da tasarımdan uygulamaya, bakımdan bitkilendirmeye kadar peyzaj hizmetleri ve bitki çeşitleri."
+>
+  <section class="bolum">
+    <div class="kapsayici metin-icerik">
+      <Breadcrumb adimlar={[{ ad: 'Hakkımızda' }]} />
+      <h1>Hakkımızda</h1>
+      <p class="giris">{firma.slogan}</p>
+      <p>
+        Ay Peyzaj, hayalinizdeki dış mekânı tasarlayan ve yaşatan bir peyzaj firmasıdır. Yıllarca süren deneyimimizle her projeyi bir yaşam alanı olarak ele alıyoruz. Tasarımdan uygulamaya, bakımdan bitkilendirmeye kadar her adımda kalite ve doğaya saygıyı ön planda tutuyoruz.
+      </p>
+      <p>
+        Bartın'daki işletmemizde peyzaj hizmetlerinin yanında ağaç ve fidan, çalı ve süs bitkileri, mevsimlik çiçekler, salon bitkileri ve saksı çeşitleri de sunuyoruz.
+        <a href="/hizmetlerimiz">Hizmetlerimizi</a> ve <a href="/cesitlerimiz">çeşitlerimizi</a> inceleyebilir, sorularınız için bize WhatsApp'tan yazabilirsiniz.
+      </p>
+    </div>
+  </section>
+
+  <section class="bolum bolum--acik" aria-labelledby="surec-baslik">
+    <div class="kapsayici">
+      <h2 id="surec-baslik">Çalışma sürecimiz</h2>
+      <Surec />
+    </div>
+  </section>
+
+  <IletisimBandi />
+</Base>

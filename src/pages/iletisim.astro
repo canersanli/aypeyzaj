@@ -1,0 +1,129 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import Ikon from '../components/Ikon.astro';
+import { firma, whatsapp } from '../lib/site';
+---
+
+<Base
+  baslik="İletişim | Ay Peyzaj ve Çiçekçilik Bartın"
+  aciklama={`Ay Peyzaj ve Çiçekçilik iletişim: ${firma.adres}. Telefon ${firma.cep}. Bilgi ve sipariş için WhatsApp'tan yazın.`}
+>
+  <section class="bolum">
+    <div class="kapsayici">
+      <Breadcrumb adimlar={[{ ad: 'İletişim' }]} />
+      <h1>İletişim</h1>
+      <p class="giris">Sipariş, teklif ve sorularınız için en hızlı yol WhatsApp. Dilerseniz arayabilir ya da e-posta gönderebilirsiniz.</p>
+
+      <div class="iletisim">
+        <div class="iletisim__kart">
+          <h2>{firma.ticari_ad}</h2>
+          <ul class="iletisim__liste">
+            <li>
+              <Ikon ad="konum" />
+              <span>
+                {firma.adres}<br />
+                <a href={firma.harita} rel="noopener" target="_blank">Google Haritalar'da aç</a>
+              </span>
+            </li>
+            <li>
+              <Ikon ad="telefon" />
+              <span>
+                Cep: <a href={`tel:${firma.cep_tel}`}>{firma.cep}</a><br />
+                Sabit: <a href={`tel:${firma.sabit_tel}`}>{firma.sabit}</a>
+              </span>
+            </li>
+            <li>
+              <Ikon ad="eposta" />
+              <a href={`mailto:${firma.eposta}`}>{firma.eposta}</a>
+            </li>
+            <li>
+              <Ikon ad="instagram" />
+              <a href={firma.instagram} rel="noopener" target="_blank">Instagram</a>
+            </li>
+            <li>
+              <Ikon ad="facebook" />
+              <a href={firma.facebook} rel="noopener" target="_blank">Facebook</a>
+            </li>
+          </ul>
+          {firma.calisma_saatleri && <p><strong>Çalışma saatleri:</strong> {firma.calisma_saatleri}</p>}
+        </div>
+
+        <div class="iletisim__eylem">
+          <h2>Hemen yazın</h2>
+          <p>Ürün, hizmet veya teklif için mesajınızı WhatsApp'tan gönderin.</p>
+          <div class="butonlar">
+            <a class="buton buton--whatsapp buton--buyuk" href={whatsapp()} rel="noopener" target="_blank">
+              <Ikon ad="whatsapp" /> WhatsApp'tan Yazın
+            </a>
+            <a class="buton buton--cizgi buton--buyuk" href={whatsapp('teklif')} rel="noopener" target="_blank">Peyzaj teklifi isteyin</a>
+            <a class="buton buton--ana buton--buyuk" href={`tel:${firma.cep_tel}`}><Ikon ad="telefon" /> Telefonla Ara</a>
+          </div>
+          <a class="harita-link" href={firma.harita} rel="noopener" target="_blank">
+            <Ikon ad="konum" />
+            <span>Konumumuzu Google Haritalar'da görüntüleyin</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .iletisim {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+  .iletisim__kart,
+  .iletisim__eylem {
+    background: #fff;
+    border: 1px solid var(--cizgi);
+    border-radius: var(--radius);
+    padding: 1.75rem;
+  }
+  .iletisim h2 {
+    font-size: 1.4rem;
+  }
+  .iletisim__liste {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem;
+  }
+  .iletisim__liste li {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    padding-block: 0.65rem;
+    border-bottom: 1px solid var(--cizgi);
+  }
+  .iletisim__liste :global(svg),
+  .harita-link :global(svg) {
+    width: 1.3rem;
+    height: 1.3rem;
+    flex: none;
+    margin-top: 0.15rem;
+    color: var(--yesil-700);
+  }
+  .iletisim__eylem .butonlar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .harita-link {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+    margin-top: 1.5rem;
+    padding: 1.25rem;
+    border-radius: var(--radius);
+    background: var(--yesil-100);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  @media (max-width: 760px) {
+    .iletisim {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

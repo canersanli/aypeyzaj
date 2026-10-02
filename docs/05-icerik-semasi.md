@@ -19,6 +19,9 @@ src/
         01.jpg, 02.jpg ...
   data/
     firma.json                   ← iletişim bilgileri (tek kaynak)
+    hero.json                    ← ana sayfa hero görselinin alt metni ve stok bilgisi
+  assets/
+    hero.jpg                     ← ana sayfa hero görseli
 public/
   _redirects                     ← 301 yönlendirmeleri
 ```
@@ -31,6 +34,8 @@ kategori: cali-ve-sus-bitkileri   # zorunlu
 altkategori:                      # opsiyonel, yalnızca alt kategorisi olan kategorilerde
 gorsel: ./lavanta.jpg             # opsiyonel; yoksa yer tutucu
 gorsel_alt:                       # opsiyonel; boşsa "{ad} — Ay Peyzaj Bartın"
+stok_gorsel: true                 # opsiyonel; true → geçici stok fotoğraf (Unsplash/Pexels)
+gorsel_kaynak: https://www.pexels.com/photo/...   # stok fotoğrafın sayfa URL'si (stok_gorsel: true ise zorunlu)
 gorseller: []                     # opsiyonel ek görseller
 latince:                          # opsiyonel, örn. Lavandula angustifolia
 aciklama:                         # opsiyonel, 1-2 cümle; meta description'da da kullanılır
@@ -60,6 +65,10 @@ altkategoriler:
   - { ad: Yapraklı Bitkiler, slug: yaprakli-bitkiler, giris: "..." }
   - { ad: Çiçekli Bitkiler, slug: cicekli-bitkiler, giris: "..." }
   - { ad: Kaktüs - Sukkulent, slug: kaktus-sukkulent, giris: "..." }
+gorsel: ./salon-bitkileri.jpg     # opsiyonel; katalog kartlarında kullanılır
+gorsel_alt: ...
+stok_gorsel: true                 # opsiyonel; ürünlerdeki gibi
+gorsel_kaynak: https://www.pexels.com/photo/...
 seo_baslik: Bartın Salon Bitkileri | Ay Peyzaj ve Çiçekçilik
 seo_aciklama: ...
 ---
@@ -91,7 +100,7 @@ musteri: Bartın Valiliği
 konum: Bartın
 tarih: 2025-05                    # YYYY veya YYYY-MM
 hizmet: peyzaj-tasarimi           # hizmet slug'ı → hizmet sayfasında listelenir
-kapak: ./kapak.jpg                # zorunlu
+kapak: ./kapak.jpg                # görsel arşivi gelene kadar boş kalabilir; boşsa "Örnek görsel" etiketli yer tutucu gösterilir ve sayfa noindex olur
 gorseller: [./01.jpg, ./02.jpg]
 one_cikan: true
 sira: 100
@@ -104,6 +113,13 @@ Proje açıklaması.
 - Küçük harf; ç→c, ğ→g, ı→i, İ→i, ö→o, ş→s, ü→u
 - Boşluk ve parantez → tire; ardışık tireler teke iner. "Horoz İbiği (Balta)" → `horoz-ibigi-balta`
 - Yayınlanmış slug değiştirilmez. Zorunlu kalırsa eski adres `_redirects`'e 301 olarak eklenir.
+
+## Stok görseller (demo dönemi)
+- Logo ve gerçek fotoğraflar gelene kadar ürün, kategori ve ana sayfa hero görsellerinde **yalnızca Unsplash/Pexels'ten ücretsiz lisanslı** stok fotoğraf kullanılır. Galeri (projeler) için stok fotoğraf kullanılmaz.
+- Her stok görselde `stok_gorsel: true` ve `gorsel_kaynak: <fotoğraf sayfası URL'si>` yazılır (ürün/kategori dosyasında; hero için `src/data/hero.json`'da).
+- Bitkiyle tam eşleşen fotoğraf yoksa görsel boş bırakılır (yer tutucu). Emin olunmayan eşleşmeler PR özetinde listelenir.
+- Ürün sayfasında stok görselin altında "Temsili görsel" notu görünür.
+- Gerçek fotoğraf gelince görsel dosyası değiştirilir, `stok_gorsel` ve `gorsel_kaynak` satırları silinir.
 
 ## Görsel kuralları
 - Repoya eklenmeden önce uzun kenar en fazla **2000px**, JPG kalitesi ~82.

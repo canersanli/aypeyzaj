@@ -1,0 +1,56 @@
+---
+import { firma } from '../lib/site';
+
+interface Props {
+  adimlar: { ad: string; href?: string }[];
+}
+const { adimlar } = Astro.props;
+const tum = [{ ad: 'Ana Sayfa', href: '/' }, ...adimlar];
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: tum.map((a, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: a.ad,
+    ...(a.href ? { item: new URL(a.href, firma.web).href } : {}),
+  })),
+};
+---
+
+<nav class="breadcrumb" aria-label="Sayfa yolu">
+  <ol>
+    {
+      tum.map((a, i) => (
+        <li>
+          {a.href && i < tum.length - 1 ? <a href={a.href}>{a.ad}</a> : <span aria-current="page">{a.ad}</span>}
+        </li>
+      ))
+    }
+  </ol>
+</nav>
+<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+<style>
+  .breadcrumb ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    list-style: none;
+    margin: 0 0 0.75rem;
+    padding: 0;
+    font-size: 0.875rem;
+    color: var(--metin-soluk);
+  }
+  .breadcrumb li:not(:last-child)::after {
+    content: '/';
+    margin-left: 0.35rem;
+    opacity: 0.6;
+  }
+  .breadcrumb a {
+    color: var(--metin-soluk);
+  }
+  .breadcrumb a:hover {
+    color: var(--yesil-700);
+  }
+</style>

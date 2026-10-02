@@ -1,0 +1,231 @@
+:root {
+  --yesil-900: #2f3b1c;
+  --yesil-700: #4e6128;
+  --yesil-100: #eef1e4;
+  --sari-500: #e8b923;
+  --krem: #faf8f2;
+  --metin: #23261e;
+  --metin-soluk: #55594d;
+  --whatsapp: #25d366;
+  --whatsapp-koyu: #128c4a;
+  --cizgi: #dfe3d2;
+  --radius: 12px;
+  --serif: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --sans: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --genislik: 1180px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--krem);
+  color: var(--metin);
+  font-family: var(--sans);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--serif);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--yesil-900);
+  margin: 0 0 0.5em;
+}
+
+h1 {
+  font-size: clamp(2rem, 1.4rem + 2.4vw, 3rem);
+}
+
+h2 {
+  font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.1rem);
+}
+
+h3 {
+  font-size: 1.2rem;
+}
+
+p {
+  margin: 0 0 1em;
+}
+
+a {
+  color: var(--yesil-700);
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  color: var(--yesil-900);
+}
+
+:focus-visible {
+  outline: 3px solid var(--sari-500);
+  outline-offset: 2px;
+}
+
+.kapsayici {
+  width: min(100% - 2rem, var(--genislik));
+  margin-inline: auto;
+}
+
+.bolum {
+  padding-block: clamp(2.5rem, 2rem + 3vw, 4.5rem);
+}
+
+.bolum--acik {
+  background: var(--yesil-100);
+}
+
+.bolum__baslik {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.bolum__baslik h2 {
+  margin: 0;
+}
+
+.giris {
+  font-size: 1.08rem;
+  max-width: 68ch;
+  color: var(--metin-soluk);
+}
+
+.izgara {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+}
+
+.izgara--genis {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+}
+
+/* Butonlar */
+.buton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 48px;
+  padding: 0.7rem 1.3rem;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  font: 600 1rem/1.2 var(--sans);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.buton svg {
+  width: 1.25em;
+  height: 1.25em;
+  flex: none;
+}
+
+.buton--whatsapp {
+  background: var(--whatsapp);
+  color: #0b2e17;
+}
+
+.buton--whatsapp:hover {
+  background: #1fb85a;
+  color: #0b2e17;
+}
+
+.buton--ana {
+  background: var(--yesil-700);
+  color: #fff;
+}
+
+.buton--ana:hover {
+  background: var(--yesil-900);
+  color: #fff;
+}
+
+.buton--cizgi {
+  border-color: currentColor;
+  color: var(--yesil-700);
+  background: transparent;
+}
+
+.buton--cizgi:hover {
+  background: var(--yesil-700);
+  border-color: var(--yesil-700);
+  color: #fff;
+}
+
+.buton--buyuk {
+  min-height: 56px;
+  font-size: 1.1rem;
+  padding-inline: 1.6rem;
+}
+
+.butonlar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.rozet {
+  display: inline-block;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  background: var(--sari-500);
+  color: var(--metin);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.gorunmez {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.metin-icerik {
+  max-width: 70ch;
+}
+
+.metin-icerik h2 {
+  font-size: 1.5rem;
+  margin-top: 1.6em;
+}
+
+.metin-icerik ul {
+  padding-left: 1.2rem;
+}
+
+.metin-icerik li {
+  margin-bottom: 0.35rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}

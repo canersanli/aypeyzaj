@@ -1,0 +1,57 @@
+---
+// Görseli olmayan ürün/proje için yer tutucu: açık yeşil zemin + yaprak ikonu + ad
+import Ikon from './Ikon.astro';
+
+interface Props {
+  ad: string;
+  etiket?: string;
+  oran?: string;
+}
+const { ad, etiket, oran = '4 / 3' } = Astro.props;
+---
+
+<div class="yertutucu" style={`aspect-ratio: ${oran}`} role="img" aria-label={etiket ? `${ad} — ${etiket}` : `${ad} — görsel yakında`}>
+  {etiket && <span class="yertutucu__etiket">{etiket}</span>}
+  <Ikon ad="yaprak" class="yertutucu__ikon" />
+  <span class="yertutucu__ad">{ad}</span>
+</div>
+
+<style>
+  .yertutucu {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    width: 100%;
+    padding: 1rem;
+    background:
+      radial-gradient(circle at 30% 20%, rgb(255 255 255 / 0.6), transparent 60%),
+      var(--yesil-100);
+    color: var(--yesil-700);
+    text-align: center;
+  }
+  :global(.yertutucu__ikon) {
+    width: 3rem;
+    height: 3rem;
+    opacity: 0.8;
+  }
+  .yertutucu__ad {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 1.1rem;
+    line-height: 1.25;
+  }
+  .yertutucu__etiket {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: var(--sari-500);
+    color: var(--metin);
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+</style>
