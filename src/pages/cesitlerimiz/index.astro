@@ -1,0 +1,90 @@
+---
+import { Picture } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import KatalogBandi from '../../components/KatalogBandi.astro';
+import { kategorileriGetir, urunleriGetir } from '../../lib/site';
+
+const kategoriler = await kategorileriGetir();
+const urunler = await urunleriGetir();
+const sayi = (id: string) => urunler.filter((u) => u.data.kategori === id).length;
+---
+
+<Base
+  baslik="Çeşitlerimiz | Bartın Çiçek, Fidan ve Bitki Kataloğu | Ay Peyzaj"
+  aciklama="Ağaçlar, çalı ve süs bitkileri, sarılıcılar, mevsimlik çiçekler, salon bitkileri, saksı ve bahçe ekipmanları. Bartın'da Ay Peyzaj kataloğu."
+>
+  <KatalogBandi />
+  <section class="bolum">
+    <div class="kapsayici">
+      <Breadcrumb adimlar={[{ ad: 'Çeşitlerimiz' }]} />
+      <h1>Çeşitlerimiz</h1>
+      <p class="giris">
+        Bahçe, balkon ve iç mekânlarınız için bitki ve ürün kataloğumuz. Bir kategori seçin, beğendiğiniz ürünü WhatsApp'tan sorun.
+      </p>
+      <ul class="kategori-liste">
+        {
+          kategoriler.map((k) => (
+            <li>
+              <a href={`/cesitlerimiz/${k.id}`}>
+                <div class="kategori-liste__gorsel">
+                  {k.data.gorsel && (
+                    <Picture src={k.data.gorsel} alt={k.data.gorsel_alt ?? ''} formats={['avif', 'webp']} widths={[320, 480, 640]} sizes="(max-width: 600px) 100vw, 360px" loading="lazy" />
+                  )}
+                </div>
+                <h2>{k.data.ad}</h2>
+                <p>
+                  {sayi(k.id) > 0 ? `${sayi(k.id)} çeşit` : 'Yakında'}
+                  {k.data.altkategoriler?.length ? ` · ${k.data.altkategoriler.map((a) => a.ad).join(', ')}` : ''}
+                </p>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .kategori-liste {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  }
+  .kategori-liste a {
+    display: block;
+    text-decoration: none;
+    color: var(--metin);
+  }
+  .kategori-liste__gorsel {
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--yesil-100);
+  }
+  .kategori-liste__gorsel :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.25s ease;
+  }
+  .kategori-liste a:hover :global(img) {
+    transform: scale(1.04);
+  }
+  .kategori-liste h2 {
+    font-size: 1.35rem;
+    margin: 0.75rem 0 0.2rem;
+  }
+  .kategori-liste a:hover h2 {
+    color: var(--yesil-700);
+  }
+  .kategori-liste p {
+    margin: 0;
+    color: var(--metin-soluk);
+    font-size: 0.95rem;
+  }
+</style>

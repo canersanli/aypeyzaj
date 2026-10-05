@@ -1,0 +1,161 @@
+---
+// Kategori ve alt kategori sayfalarının ortak gövdesi:
+// başlık + giriş metni, (varsa) alt kategori menüsü ve ürün ızgarası ya da "yakında" mesajı.
+import Breadcrumb from './Breadcrumb.astro';
+import UrunKart from './UrunKart.astro';
+import Ikon from './Ikon.astro';
+import { whatsapp, type Kategori, type Urun } from '../lib/site';
+
+interface Props {
+  kategori: Kategori;
+  altkategori?: { ad: string; slug: string; giris: string };
+  urunler: Urun[];
+}
+const { kategori, altkategori, urunler } = Astro.props;
+const altlar = kategori.data.altkategoriler ?? [];
+const breadcrumb = [
+  { ad: 'Çeşitlerimiz', href: '/cesitlerimiz' },
+  altkategori ? { ad: kategori.data.ad, href: `/cesitlerimiz/${kategori.id}` } : { ad: kategori.data.ad },
+  ...(altkategori ? [{ ad: altkategori.ad }] : []),
+];
+---
+
+<section class="bolum katalog">
+  <div class="kapsayici">
+    <Breadcrumb adimlar={breadcrumb} />
+    <div class:list={['katalog__duzen', { 'katalog__duzen--yanli': altlar.length > 0 }]}>
+      {
+        altlar.length > 0 && (
+          <nav class="alt-menu" aria-label={`${kategori.data.ad} alt kategorileri`}>
+            <ul>
+              <li>
+                <a href={`/cesitlerimiz/${kategori.id}`} aria-current={!altkategori ? 'page' : undefined}>
+                  Tümü
+                </a>
+              </li>
+              {altlar.map((a) => (
+                <li>
+                  <a
+                    href={`/cesitlerimiz/${kategori.id}/${a.slug}`}
+                    aria-current={altkategori?.slug === a.slug ? 'page' : undefined}
+                  >
+                    {a.ad}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )
+      }
+
+      <div>
+        <h1>{altkategori?.ad ?? kategori.data.ad}</h1>
+        <div class="giris">
+          {altkategori ? <p>{altkategori.giris}</p> : <slot />}
+        </div>
+
+        {
+          urunler.length > 0 ? (
+            <div class="izgara">
+              {urunler.map((u) => (
+                <UrunKart urun={u} />
+              ))}
+            </div>
+          ) : (
+            <div class="yakinda">
+              <Ikon ad="yaprak" />
+              <p>Bu kategorideki ürünlerimizi yakında ekleyeceğiz. Güncel çeşitler için WhatsApp'tan bize yazın.</p>
+              <a
+                class="buton buton--whatsapp buton--buyuk"
+                href={whatsapp('urun', altkategori?.ad ?? kategori.data.ad)}
+                rel="noopener"
+                target="_blank"
+              >
+                <Ikon ad="whatsapp" /> WhatsApp'tan Sor
+              </a>
+            </div>
+          )
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .katalog__duzen--yanli {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 2.5rem;
+    align-items: start;
+  }
+  .katalog .giris {
+    margin-bottom: 1.75rem;
+  }
+  .alt-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: sticky;
+    top: 96px;
+  }
+  .alt-menu a {
+    display: block;
+    padding: 0.6rem 0.85rem;
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--metin);
+    font-weight: 600;
+  }
+  .alt-menu a:hover {
+    background: var(--yesil-100);
+  }
+  .alt-menu a[aria-current='page'] {
+    background: var(--yesil-100);
+    color: var(--yesil-900);
+    box-shadow: inset 4px 0 0 var(--sari-500);
+  }
+  .yakinda {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 2rem;
+    background: var(--yesil-100);
+    border-radius: var(--radius);
+    max-width: 640px;
+  }
+  .yakinda > :global(svg) {
+    width: 2.5rem;
+    height: 2.5rem;
+    color: var(--yesil-700);
+  }
+  .yakinda p {
+    margin: 0;
+    font-size: 1.05rem;
+  }
+  @media (max-width: 860px) {
+    .katalog__duzen--yanli {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    .alt-menu ul {
+      position: static;
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.25rem;
+    }
+    .alt-menu a {
+      white-space: nowrap;
+      border: 1px solid var(--cizgi);
+      border-radius: 999px;
+      background: #fff;
+    }
+    .alt-menu a[aria-current='page'] {
+      box-shadow: none;
+      background: var(--yesil-700);
+      border-color: var(--yesil-700);
+      color: #fff;
+    }
+  }
+</style>

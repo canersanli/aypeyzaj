@@ -1,0 +1,106 @@
+---
+import { render } from 'astro:content';
+import { Picture } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import Yertutucu from '../../components/Yertutucu.astro';
+import Ikon from '../../components/Ikon.astro';
+import { whatsapp, projeleriGetir, hizmetleriGetir, type Proje } from '../../lib/site';
+
+export async function getStaticPaths() {
+  const projeler = await projeleriGetir();
+  return projeler.map((proje) => ({ params: { slug: proje.id }, props: { proje } }));
+}
+
+interface Props {
+  proje: Proje;
+}
+const { proje } = Astro.props;
+const { baslik, musteri, konum, tarih, hizmet, kapak, gorseller } = proje.data;
+const { Content } = await render(proje);
+const ilgiliHizmet = hizmet ? (await hizmetleriGetir()).find((h) => h.id === hizmet) : undefined;
+const tarihMetni = tarih instanceof Date ? String(tarih.getFullYear()) : tarih ? String(tarih) : undefined;
+const sayfaBasligi = konum ? `${baslik} — ${konum} | Ay Peyzaj Projeleri` : `${baslik} | Ay Peyzaj Projeleri`;
+---
+
+<Base
+  baslik={sayfaBasligi}
+  aciklama={`${baslik}${musteri ? ` (${musteri})` : ''}: Ay Peyzaj'ın Bartın'daki projelerinden. Kendi projeniz için WhatsApp'tan bize yazın.`}
+  noindex={!kapak}
+  ogGorsel={kapak}
+>
+  <section class="bolum">
+    <div class="kapsayici">
+      <Breadcrumb adimlar={[{ ad: 'Galeri', href: '/galeri' }, { ad: baslik }]} />
+      <h1>{baslik}</h1>
+      <dl class="proje-bilgi">
+        {musteri && (<div><dt>Müşteri</dt><dd>{musteri}</dd></div>)}
+        {konum && (<div><dt>Konum</dt><dd>{konum}</dd></div>)}
+        {tarihMetni && (<div><dt>Tarih</dt><dd>{tarihMetni}</dd></div>)}
+        {ilgiliHizmet && (<div><dt>Hizmet</dt><dd><a href={`/hizmetlerimiz/${ilgiliHizmet.id}`}>{ilgiliHizmet.data.ad}</a></dd></div>)}
+      </dl>
+
+      <div class="proje-kapak">
+        {
+          kapak ? (
+            <Picture src={kapak} alt={baslik} formats={['avif', 'webp']} widths={[640, 960, 1280, 1600]} sizes="(max-width: 1200px) 100vw, 1180px" loading="eager" />
+          ) : (
+            <Yertutucu ad={baslik} etiket="Örnek görsel" oran="16 / 9" />
+          )
+        }
+      </div>
+
+      <div class="metin-icerik">
+        <Content />
+      </div>
+
+      {
+        gorseller && gorseller.length > 0 && (
+          <div class="izgara izgara--genis proje-gorseller">
+            {gorseller.map((g, i) => (
+              <Picture src={g} alt={`${baslik} — görsel ${i + 2}`} formats={['avif', 'webp']} widths={[400, 640, 960]} sizes="(max-width: 700px) 100vw, 380px" loading="lazy" />
+            ))}
+          </div>
+        )
+      }
+
+      <div class="butonlar">
+        <a class="buton buton--whatsapp buton--buyuk" href={whatsapp('teklif')} rel="noopener" target="_blank">
+          <Ikon ad="whatsapp" /> Benzer bir proje için yazın
+        </a>
+        <a class="buton buton--cizgi buton--buyuk" href="/galeri">Tüm projeler</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .proje-bilgi {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 2rem;
+    margin: 0 0 1.5rem;
+  }
+  .proje-bilgi dt {
+    font-size: 0.85rem;
+    color: var(--metin-soluk);
+  }
+  .proje-bilgi dd {
+    margin: 0;
+    font-weight: 600;
+  }
+  .proje-kapak {
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+  .proje-kapak :global(img) {
+    width: 100%;
+  }
+  .proje-gorseller {
+    margin-block: 1.5rem;
+  }
+  .proje-gorseller :global(img) {
+    border-radius: var(--radius);
+  }
+</style>

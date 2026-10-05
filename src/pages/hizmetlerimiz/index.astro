@@ -1,0 +1,52 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import HizmetKart from '../../components/HizmetKart.astro';
+import Surec from '../../components/Surec.astro';
+import Ikon from '../../components/Ikon.astro';
+import { whatsapp, hizmetleriGetir } from '../../lib/site';
+
+const hizmetler = await hizmetleriGetir();
+---
+
+<Base
+  baslik="Bartın Peyzaj ve Bahçe Hizmetleri | Ay Peyzaj"
+  aciklama="Bartın'da peyzaj tasarımı, bahçe bakımı, aranjman, bitki seçimi, gübreleme ve çim uygulaması. Teklif için Ay Peyzaj'a WhatsApp'tan yazın."
+>
+  <section class="bolum">
+    <div class="kapsayici">
+      <Breadcrumb adimlar={[{ ad: 'Hizmetlerimiz' }]} />
+      <h1>Hizmetlerimiz</h1>
+      <p class="giris">Tasarımdan uygulamaya, bakımdan bitkilendirmeye kadar dış mekânınız için ihtiyaç duyduğunuz hizmetler.</p>
+      <div class="izgara izgara--genis">
+        {hizmetler.map((h) => <HizmetKart hizmet={h} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="bolum bolum--acik" aria-labelledby="surec-baslik">
+    <div class="kapsayici">
+      <h2 id="surec-baslik">Çalışma sürecimiz</h2>
+      <Surec />
+    </div>
+  </section>
+
+  <section class="bolum">
+    <div class="kapsayici teklif">
+      <h2>Bahçeniz için teklif alın</h2>
+      <p class="giris">Alanınızın birkaç fotoğrafını ve yaklaşık ölçüsünü gönderin, keşif ve teklif için size dönelim.</p>
+      <a class="buton buton--whatsapp buton--buyuk" href={whatsapp('teklif')} rel="noopener" target="_blank">
+        <Ikon ad="whatsapp" /> WhatsApp'tan Teklif İsteyin
+      </a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .teklif {
+    text-align: center;
+  }
+  .teklif .giris {
+    margin-inline: auto;
+  }
+</style>

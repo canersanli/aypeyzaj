@@ -1,0 +1,36 @@
+---
+import { render } from 'astro:content';
+import Base from '../../../layouts/Base.astro';
+import KatalogBandi from '../../../components/KatalogBandi.astro';
+import KatalogListesi from '../../../components/KatalogListesi.astro';
+import { kategorileriGetir, urunleriGetir, type Kategori, type Urun } from '../../../lib/site';
+
+export async function getStaticPaths() {
+  const kategoriler = await kategorileriGetir();
+  const urunler = await urunleriGetir();
+  return kategoriler.map((kategori) => ({
+    params: { kategori: kategori.id },
+    props: { kategori, urunler: urunler.filter((u) => u.data.kategori === kategori.id) },
+  }));
+}
+
+interface Props {
+  kategori: Kategori;
+  urunler: Urun[];
+}
+const { kategori, urunler } = Astro.props;
+const { Content } = await render(kategori);
+const { ad, seo_baslik, seo_aciklama } = kategori.data;
+---
+
+<Base
+  baslik={seo_baslik ?? `Bartın ${ad} | Ay Peyzaj`}
+  aciklama={seo_aciklama ?? `Bartın'da ${ad.toLocaleLowerCase('tr')} çeşitleri Ay Peyzaj'da. Bilgi ve sipariş için WhatsApp'tan bize yazın.`}
+  noindex={urunler.length === 0}
+  ogGorsel={kategori.data.gorsel}
+>
+  <KatalogBandi aktif={kategori.id} />
+  <KatalogListesi kategori={kategori} urunler={urunler}>
+    <Content />
+  </KatalogListesi>
+</Base>

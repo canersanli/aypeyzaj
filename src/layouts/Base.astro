@@ -1,0 +1,431 @@
+---
+import '@fontsource/fraunces/600.css';
+import '@fontsource/fraunces/600-italic.css';
+import '@fontsource/figtree/400.css';
+import '@fontsource/figtree/600.css';
+import '@fontsource/figtree/700.css';
+import '../styles/global.css';
+import { getImage } from 'astro:assets';
+import Logo from '../components/Logo.astro';
+import Ikon from '../components/Ikon.astro';
+import heroGorsel from '../assets/hero.jpg';
+import { firma, whatsapp, kategorileriGetir, hizmetleriGetir, kisalt } from '../lib/site';
+
+interface Props {
+  baslik: string;
+  aciklama: string;
+  noindex?: boolean;
+  ogGorsel?: ImageMetadata;
+  jsonLd?: Record<string, unknown>[];
+}
+
+const { baslik, aciklama, noindex = false, ogGorsel, jsonLd = [] } = Astro.props;
+// build.format 'file' olduğu için yol /sayfa.html veya /index.html gelebilir; kanonik biçim /sayfa
+const yol = Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '').replace(/\/$/, '') || '/';
+const kanonik = new URL(yol, Astro.site).href;
+const og = await getImage({ src: ogGorsel ?? heroGorsel, width: 1200, format: 'jpg' });
+const ogUrl = new URL(og.src, Astro.site).href;
+
+const kategoriler = await kategorileriGetir();
+const hizmetler = await hizmetleriGetir();
+
+const menu = [
+  { ad: 'Ana Sayfa', href: '/' },
+  { ad: 'Hakkımızda', href: '/hakkimizda' },
+  { ad: 'Çeşitlerimiz', href: '/cesitlerimiz' },
+  { ad: 'Hizmetlerimiz', href: '/hizmetlerimiz' },
+  { ad: 'Galeri', href: '/galeri' },
+  { ad: 'İletişim', href: '/iletisim' },
+];
+const aktifMi = (href: string) =>
+  href === '/' ? yol === '/' : yol === href || yol.startsWith(href + '/') || (href === '/cesitlerimiz' && yol.startsWith('/urun/'));
+
+const isletme = {
+  '@context': 'https://schema.org',
+  '@type': ['Florist', 'GardenStore'],
+  '@id': `${firma.web}/#isletme`,
+  name: firma.ticari_ad,
+  url: firma.web,
+  telephone: firma.cep_tel,
+  email: firma.eposta,
+  image: new URL(og.src, Astro.site).href,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: firma.adres_sokak,
+    addressLocality: firma.ilce,
+    addressRegion: firma.sehir,
+    addressCountry: 'TR',
+  },
+  hasMap: firma.harita,
+  areaServed: { '@type': 'City', name: firma.sehir },
+  sameAs: [firma.instagram, firma.facebook],
+};
+---
+
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{baslik}</title>
+    <meta name="description" content={kisalt(aciklama)} />
+    <link rel="canonical" href={kanonik} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+    <meta name="theme-color" content="#4e6128" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="tr_TR" />
+    <meta property="og:site_name" content={firma.ticari_ad} />
+    <meta property="og:title" content={baslik} />
+    <meta property="og:description" content={kisalt(aciklama)} />
+    <meta property="og:url" content={kanonik} />
+    <meta property="og:image" content={ogUrl} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={baslik} />
+    <meta name="twitter:description" content={kisalt(aciklama)} />
+    <meta name="twitter:image" content={ogUrl} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(isletme)} />
+    {jsonLd.map((veri) => <script type="application/ld+json" set:html={JSON.stringify(veri)} />)}
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="atla" href="#icerik">İçeriğe geç</a>
+
+    <div class="ust-bar">
+      <div class="kapsayici ust-bar__ic">
+        <span class="ust-bar__adres">{firma.sehir} · {firma.kisa_ad}</span>
+        <a href={`tel:${firma.cep_tel}`}><Ikon ad="telefon" /> {firma.cep}</a>
+        <a href={whatsapp()} rel="noopener" target="_blank"><Ikon ad="whatsapp" /> WhatsApp</a>
+      </div>
+    </div>
+
+    <header class="ust">
+      <div class="kapsayici ust__ic">
+        <Logo />
+        <div class="menu">
+          <input type="checkbox" id="menu-ac" class="menu__dugme gorunmez" />
+          <label for="menu-ac" class="menu__etiket"><Ikon ad="menu" /><span>Menü</span></label>
+          <nav aria-label="Ana menü">
+            <ul>
+              {
+                menu.map((m) => (
+                  <li>
+                    <a href={m.href} aria-current={aktifMi(m.href) ? 'page' : undefined}>
+                      {m.ad}
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+          </nav>
+        </div>
+        <a class="buton buton--whatsapp ust__wa" href={whatsapp()} rel="noopener" target="_blank">
+          <Ikon ad="whatsapp" /> WhatsApp
+        </a>
+      </div>
+    </header>
+
+    <main id="icerik">
+      <slot />
+    </main>
+
+    <footer class="alt">
+      <div class="kapsayici alt__izgara">
+        <div>
+          <Logo acik />
+          <p class="alt__slogan">{firma.slogan}</p>
+          <address>
+            <strong>{firma.ticari_ad}</strong><br />
+            {firma.adres}<br />
+            <a href={`tel:${firma.cep_tel}`}>{firma.cep}</a> · <a href={`tel:${firma.sabit_tel}`}>{firma.sabit}</a><br />
+            <a href={`mailto:${firma.eposta}`}>{firma.eposta}</a>
+          </address>
+          <div class="alt__sosyal">
+            <a href={firma.instagram} rel="noopener" target="_blank" aria-label="Instagram"><Ikon ad="instagram" /></a>
+            <a href={firma.facebook} rel="noopener" target="_blank" aria-label="Facebook"><Ikon ad="facebook" /></a>
+            <a href={firma.harita} rel="noopener" target="_blank" aria-label="Google Haritalar'da konum"><Ikon ad="konum" /></a>
+          </div>
+        </div>
+        <nav aria-label="Kategoriler">
+          <h2>Çeşitlerimiz</h2>
+          <ul>
+            {kategoriler.map((k) => <li><a href={`/cesitlerimiz/${k.id}`}>{k.data.ad}</a></li>)}
+          </ul>
+        </nav>
+        <nav aria-label="Hizmetler">
+          <h2>Hizmetlerimiz</h2>
+          <ul>
+            {hizmetler.map((h) => <li><a href={`/hizmetlerimiz/${h.id}`}>{h.data.ad}</a></li>)}
+          </ul>
+        </nav>
+        <nav aria-label="Kurumsal">
+          <h2>Kurumsal</h2>
+          <ul>
+            <li><a href="/hakkimizda">Hakkımızda</a></li>
+            <li><a href="/galeri">Galeri</a></li>
+            <li><a href="/iletisim">İletişim</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="kapsayici alt__son">
+        <span>© {new Date().getFullYear()} {firma.ticari_ad}</span>
+      </div>
+    </footer>
+
+    <a class="sabit-wa" href={whatsapp()} rel="noopener" target="_blank" aria-label="WhatsApp'tan yazın">
+      <Ikon ad="whatsapp" />
+    </a>
+  </body>
+</html>
+
+<style>
+  .atla {
+    position: absolute;
+    left: -999px;
+    top: 0.5rem;
+    z-index: 100;
+    background: #fff;
+    padding: 0.5rem 1rem;
+  }
+  .atla:focus {
+    left: 0.5rem;
+  }
+
+  .ust-bar {
+    background: var(--yesil-900);
+    color: #fff;
+    font-size: 0.9rem;
+  }
+  .ust-bar__ic {
+    display: flex;
+    gap: 1.25rem;
+    align-items: center;
+    justify-content: flex-end;
+    min-height: 38px;
+  }
+  .ust-bar__adres {
+    margin-right: auto;
+    opacity: 0.85;
+  }
+  .ust-bar a {
+    color: #fff;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .ust-bar a:hover {
+    color: var(--sari-500);
+  }
+  .ust-bar :global(svg) {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .ust {
+    background: var(--krem);
+    border-bottom: 1px solid var(--cizgi);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+  .ust__ic {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-height: 72px;
+  }
+  .menu {
+    margin-left: auto;
+  }
+  .menu__etiket {
+    display: none;
+  }
+  .menu ul {
+    display: flex;
+    gap: 0.25rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .menu a {
+    display: block;
+    padding: 0.5rem 0.75rem;
+    text-decoration: none;
+    color: var(--metin);
+    font-weight: 600;
+    border-bottom: 3px solid transparent;
+  }
+  .menu a:hover {
+    color: var(--yesil-700);
+  }
+  .menu a[aria-current='page'] {
+    color: var(--yesil-700);
+    border-bottom-color: var(--sari-500);
+  }
+
+  @media (max-width: 960px) {
+    .ust-bar__adres {
+      display: none;
+    }
+    .ust-bar__ic {
+      justify-content: center;
+    }
+    .ust__wa {
+      display: none;
+    }
+    .menu__etiket {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      min-height: 44px;
+      padding: 0 0.75rem;
+      border: 2px solid var(--cizgi);
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .menu__dugme:focus-visible + .menu__etiket {
+      outline: 3px solid var(--sari-500);
+      outline-offset: 2px;
+    }
+    .menu__etiket :global(svg) {
+      width: 1.3rem;
+      height: 1.3rem;
+    }
+    .menu nav {
+      display: none;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 100%;
+      background: var(--krem);
+      border-bottom: 1px solid var(--cizgi);
+      box-shadow: 0 12px 24px rgb(0 0 0 / 0.08);
+    }
+    .menu__dugme:checked ~ nav {
+      display: block;
+    }
+    .menu ul {
+      flex-direction: column;
+      width: min(100% - 2rem, var(--genislik));
+      margin-inline: auto;
+      padding-block: 0.5rem;
+    }
+    .menu a {
+      padding: 0.8rem 0.25rem;
+      border-bottom: 1px solid var(--cizgi);
+    }
+    .menu a[aria-current='page'] {
+      border-bottom-color: var(--cizgi);
+      box-shadow: inset 4px 0 0 var(--sari-500);
+      padding-left: 0.85rem;
+    }
+  }
+
+  .alt {
+    background: var(--yesil-900);
+    color: #e8ecdc;
+    padding-top: 3rem;
+    margin-top: 0;
+  }
+  .alt a {
+    color: #fff;
+  }
+  .alt a:hover {
+    color: var(--sari-500);
+  }
+  .alt__izgara {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: 1.4fr repeat(3, 1fr);
+  }
+  .alt h2 {
+    color: #fff;
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+  }
+  .alt ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .alt li {
+    margin-bottom: 0.4rem;
+  }
+  .alt address {
+    font-style: normal;
+    margin-top: 1rem;
+  }
+  .alt__slogan {
+    margin: 0.75rem 0 0;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.05rem;
+  }
+  .alt__sosyal {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+  .alt__sosyal a {
+    display: inline-flex;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgb(255 255 255 / 0.3);
+    border-radius: 50%;
+  }
+  .alt__sosyal :global(svg) {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+  .alt__son {
+    border-top: 1px solid rgb(255 255 255 / 0.15);
+    margin-top: 2.5rem;
+    padding-block: 1.25rem;
+    font-size: 0.9rem;
+    opacity: 0.85;
+  }
+  @media (max-width: 860px) {
+    .alt__izgara {
+      grid-template-columns: 1fr 1fr;
+    }
+    .alt__izgara > div:first-child {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .sabit-wa {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 30;
+    display: none;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--whatsapp);
+    color: #0b2e17;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 18px rgb(0 0 0 / 0.25);
+  }
+  .sabit-wa :global(svg) {
+    width: 32px;
+    height: 32px;
+  }
+  @media (max-width: 960px) {
+    .sabit-wa {
+      display: inline-flex;
+    }
+    /* Sabit WhatsApp butonu telif satırını örtmesin */
+    .alt__son {
+      padding-bottom: 5.5rem;
+    }
+  }
+</style>

@@ -1,7 +1,7 @@
 # Ürün Kataloğu
 
 > Toplam 65 ürün.
-> Görseller: henüz yok; müşteriden ve arşivden geldikçe eklenecek.
+> Görseller: gerçek fotoğraflar henüz yok; müşteriden ve arşivden geldikçe eklenecek. Demo için bazı ürünlerde geçici stok fotoğraf var (`stok_gorsel: true`, bkz. `05-icerik-semasi.md`).
 > Açıklama ve özellik alanları başlangıçta boş; nasıl doldurulacağı `06-guncelleme-proseduru.md` ve `07-seo-stratejisi.md`'de.
 
 ## Ağaçlar → İbreli Ağaçlar (13)

@@ -1,0 +1,72 @@
+---
+import { Picture } from 'astro:assets';
+import Yertutucu from './Yertutucu.astro';
+import { urunSlug, gorselAlt, type Urun } from '../lib/site';
+
+interface Props {
+  urun: Urun;
+}
+const { urun } = Astro.props;
+const { ad, gorsel, stokta } = urun.data;
+---
+
+<a class="urun-kart" href={`/urun/${urunSlug(urun)}`}>
+  <div class="urun-kart__gorsel">
+    {
+      gorsel ? (
+        <Picture
+          src={gorsel}
+          alt={gorselAlt(urun)}
+          formats={['avif', 'webp']}
+          widths={[300, 480, 720]}
+          sizes="(max-width: 600px) 50vw, 280px"
+          loading="lazy"
+        />
+      ) : (
+        <Yertutucu ad={ad} />
+      )
+    }
+  </div>
+  <h3 class="urun-kart__ad">{ad}</h3>
+  {!stokta && <span class="rozet">Şu an stokta yok</span>}
+</a>
+
+<style>
+  .urun-kart {
+    display: block;
+    text-decoration: none;
+    color: var(--metin);
+  }
+  .urun-kart__gorsel {
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--yesil-100);
+  }
+  .urun-kart__gorsel :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.25s ease;
+  }
+  .urun-kart:hover .urun-kart__gorsel :global(img) {
+    transform: scale(1.04);
+  }
+  .urun-kart__gorsel :global(.yertutucu) {
+    height: 100%;
+    transition: transform 0.25s ease;
+  }
+  .urun-kart:hover .urun-kart__gorsel :global(.yertutucu) {
+    transform: scale(1.03);
+  }
+  .urun-kart__ad {
+    font-family: var(--sans);
+    font-size: 1.02rem;
+    font-weight: 600;
+    color: var(--metin);
+    margin: 0.65rem 0 0.25rem;
+  }
+  .urun-kart:hover .urun-kart__ad {
+    color: var(--yesil-700);
+  }
+</style>

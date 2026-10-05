@@ -1,0 +1,58 @@
+---
+import { Picture } from 'astro:assets';
+import Yertutucu from './Yertutucu.astro';
+import type { Proje } from '../lib/site';
+
+interface Props {
+  proje: Proje;
+}
+const { proje } = Astro.props;
+const { baslik, musteri, konum, kapak } = proje.data;
+const etiket = [musteri, konum].filter(Boolean).join(' · ');
+---
+
+<a class="proje-kart" href={`/galeri/${proje.id}`}>
+  <div class="proje-kart__gorsel">
+    {
+      kapak ? (
+        <Picture src={kapak} alt={baslik} formats={['avif', 'webp']} widths={[400, 640, 960]} sizes="(max-width: 700px) 100vw, 380px" loading="lazy" />
+      ) : (
+        <Yertutucu ad={baslik} etiket="Örnek görsel" oran="3 / 2" />
+      )
+    }
+  </div>
+  <h3>{baslik}</h3>
+  {etiket && <p>{etiket}</p>}
+</a>
+
+<style>
+  .proje-kart {
+    display: block;
+    text-decoration: none;
+    color: var(--metin);
+  }
+  .proje-kart__gorsel {
+    aspect-ratio: 3 / 2;
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .proje-kart__gorsel :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .proje-kart__gorsel :global(.yertutucu) {
+    height: 100%;
+  }
+  .proje-kart h3 {
+    margin: 0.75rem 0 0.15rem;
+  }
+  .proje-kart p {
+    margin: 0;
+    color: var(--metin-soluk);
+    font-size: 0.95rem;
+  }
+  .proje-kart:hover h3 {
+    color: var(--yesil-700);
+  }
+</style>

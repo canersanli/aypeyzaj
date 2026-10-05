@@ -1,0 +1,165 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import ProjeKart from '../../components/ProjeKart.astro';
+import Ikon from '../../components/Ikon.astro';
+import { firma, whatsapp, hizmetleriGetir, projeleriGetir, type Hizmet } from '../../lib/site';
+
+export async function getStaticPaths() {
+  const hizmetler = await hizmetleriGetir();
+  return hizmetler.map((hizmet) => ({ params: { slug: hizmet.id }, props: { hizmet } }));
+}
+
+interface Props {
+  hizmet: Hizmet;
+}
+const { hizmet } = Astro.props;
+const { ad, kisa, sss, seo_baslik, seo_aciklama } = hizmet.data;
+const { Content } = await render(hizmet);
+const projeler = (await projeleriGetir()).filter((p) => p.data.hizmet === hizmet.id);
+const digerHizmetler = (await hizmetleriGetir()).filter((h) => h.id !== hizmet.id);
+
+const jsonLd: Record<string, unknown>[] = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: ad,
+    serviceType: ad,
+    description: kisa,
+    provider: { '@id': `${firma.web}/#isletme` },
+    areaServed: { '@type': 'City', name: firma.sehir },
+    url: `${firma.web}/hizmetlerimiz/${hizmet.id}`,
+  },
+];
+if (sss?.length) {
+  jsonLd.push({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: sss.map((s) => ({
+      '@type': 'Question',
+      name: s.soru,
+      acceptedAnswer: { '@type': 'Answer', text: s.cevap },
+    })),
+  });
+}
+---
+
+<Base
+  baslik={seo_baslik ?? `Bartın ${ad} | Ay Peyzaj`}
+  aciklama={seo_aciklama ?? `${kisa} Bartın'da ${ad.toLocaleLowerCase('tr')} için WhatsApp'tan bize yazın.`}
+  jsonLd={jsonLd}
+>
+  <section class="bolum">
+    <div class="kapsayici hizmet">
+      <div class="hizmet__icerik">
+        <Breadcrumb adimlar={[{ ad: 'Hizmetlerimiz', href: '/hizmetlerimiz' }, { ad }]} />
+        <h1>{ad}</h1>
+        <p class="giris">{kisa}</p>
+        <div class="metin-icerik">
+          <Content />
+        </div>
+
+        {
+          sss?.length ? (
+            <section class="sss" aria-labelledby="sss-baslik">
+              <h2 id="sss-baslik">Sık sorulan sorular</h2>
+              {sss.map((s) => (
+                <details>
+                  <summary>{s.soru}</summary>
+                  <p>{s.cevap}</p>
+                </details>
+              ))}
+            </section>
+          ) : null
+        }
+      </div>
+
+      <aside class="hizmet__yan">
+        <div class="hizmet__cta">
+          <h2>{ad} için bilgi alın</h2>
+          <a class="buton buton--whatsapp buton--buyuk" href={whatsapp('hizmet', ad)} rel="noopener" target="_blank">
+            <Ikon ad="whatsapp" /> WhatsApp'tan Sor
+          </a>
+          <a class="buton buton--cizgi" href={`tel:${firma.cep_tel}`}><Ikon ad="telefon" /> Telefonla Ara</a>
+        </div>
+        <nav class="hizmet__diger" aria-label="Diğer hizmetler">
+          <h2>Diğer hizmetlerimiz</h2>
+          <ul>
+            {digerHizmetler.map((h) => <li><a href={`/hizmetlerimiz/${h.id}`}>{h.data.ad}</a></li>)}
+          </ul>
+        </nav>
+      </aside>
+    </div>
+  </section>
+
+  {
+    projeler.length > 0 && (
+      <section class="bolum bolum--acik" aria-labelledby="ilgili-projeler">
+        <div class="kapsayici">
+          <h2 id="ilgili-projeler">İlgili projeler</h2>
+          <div class="izgara izgara--genis">
+            {projeler.map((p) => <ProjeKart proje={p} />)}
+          </div>
+        </div>
+      </section>
+    )
+  }
+</Base>
+
+<style>
+  .hizmet {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 3rem;
+    align-items: start;
+  }
+  .hizmet__yan {
+    position: sticky;
+    top: 96px;
+    display: grid;
+    gap: 1.25rem;
+  }
+  .hizmet__cta {
+    display: grid;
+    gap: 0.75rem;
+    background: var(--yesil-100);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+  }
+  .hizmet__cta h2,
+  .hizmet__diger h2 {
+    font-size: 1.2rem;
+  }
+  .hizmet__diger ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .hizmet__diger li {
+    border-bottom: 1px solid var(--cizgi);
+  }
+  .hizmet__diger a {
+    display: block;
+    padding: 0.6rem 0;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .sss details {
+    border-bottom: 1px solid var(--cizgi);
+    padding-block: 0.75rem;
+  }
+  .sss summary {
+    cursor: pointer;
+    font-weight: 600;
+  }
+  @media (max-width: 900px) {
+    .hizmet {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    .hizmet__yan {
+      position: static;
+    }
+  }
+</style>

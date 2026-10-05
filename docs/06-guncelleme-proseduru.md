@@ -16,7 +16,7 @@
 "Çalı bitkilerine X eklendi, şu bilgilerle" →
 1. Kategori/alt kategoriyi eşle.
 2. Slug üret. Aynı slug varsa sor.
-3. Görsel verildiyse küçült, `<slug>.jpg` olarak md dosyasının yanına koy; alt metin yaz.
+3. Görsel verildiyse küçült, `<slug>.jpg` olarak md dosyasının yanına koy; alt metin yaz. Gerçek fotoğraf bir stok görselin yerine geliyorsa `stok_gorsel` ve `gorsel_kaynak` satırlarını sil (bkz. `05-icerik-semasi.md`, "Stok görseller").
 4. `src/content/urunler/<kategori>/<slug>.md` dosyasını oluştur.
 5. Build → commit → pull request.
 

@@ -1,0 +1,229 @@
+---
+import { render } from 'astro:content';
+import { Picture, getImage } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import KatalogBandi from '../../components/KatalogBandi.astro';
+import UrunKart from '../../components/UrunKart.astro';
+import Yertutucu from '../../components/Yertutucu.astro';
+import Ikon from '../../components/Ikon.astro';
+import {
+  firma,
+  whatsapp,
+  urunleriGetir,
+  kategorileriGetir,
+  urunSlug,
+  gorselAlt,
+  type Urun,
+  type Kategori,
+} from '../../lib/site';
+
+export async function getStaticPaths() {
+  const urunler = await urunleriGetir();
+  const kategoriler = await kategorileriGetir();
+  return urunler.map((urun) => ({
+    params: { slug: urunSlug(urun) },
+    props: {
+      urun,
+      kategori: kategoriler.find((k) => k.id === urun.data.kategori)!,
+      digerleri: urunler
+        .filter((u) => u.id !== urun.id && u.data.kategori === urun.data.kategori)
+        .sort((a, b) => Number(b.data.altkategori === urun.data.altkategori) - Number(a.data.altkategori === urun.data.altkategori))
+        .slice(0, 8),
+    },
+  }));
+}
+
+interface Props {
+  urun: Urun;
+  kategori: Kategori;
+  digerleri: Urun[];
+}
+const { urun, kategori, digerleri } = Astro.props;
+const { ad, latince, aciklama, ozellikler, gorsel, stok_gorsel, stokta, seo_baslik, seo_aciklama } = urun.data;
+const { Content } = await render(urun);
+const altkategori = kategori.data.altkategoriler?.find((a) => a.slug === urun.data.altkategori);
+
+const breadcrumb = [
+  { ad: 'Çeşitlerimiz', href: '/cesitlerimiz' },
+  { ad: kategori.data.ad, href: `/cesitlerimiz/${kategori.id}` },
+  ...(altkategori ? [{ ad: altkategori.ad, href: `/cesitlerimiz/${kategori.id}/${altkategori.slug}` }] : []),
+  { ad },
+];
+
+const rozetler = [
+  { etiket: 'Güneş', deger: ozellikler?.gunes },
+  { etiket: 'Boy', deger: ozellikler?.boy },
+  { etiket: 'Sulama', deger: ozellikler?.sulama },
+  { etiket: 'Renk', deger: ozellikler?.renk },
+  { etiket: 'Çiçek dönemi', deger: ozellikler?.cicek_donemi },
+].filter((r) => r.deger);
+
+const urunGorseli = gorsel ? await getImage({ src: gorsel, width: 1200, format: 'jpg' }) : undefined;
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: ad,
+    ...(urunGorseli ? { image: new URL(urunGorseli.src, firma.web).href } : {}),
+    ...(aciklama ? { description: aciklama } : {}),
+    category: altkategori ? `${kategori.data.ad} > ${altkategori.ad}` : kategori.data.ad,
+    brand: { '@type': 'Brand', name: firma.ticari_ad },
+    url: `${firma.web}/urun/${urunSlug(urun)}`,
+  },
+];
+---
+
+<Base
+  baslik={seo_baslik ?? `${ad} | Bartın ${kategori.data.ad} | Ay Peyzaj`}
+  aciklama={seo_aciklama ??
+    aciklama ??
+    `${ad} Bartın'da Ay Peyzaj ve Çiçekçilik'te. Çeşit, boy ve stok bilgisi için WhatsApp'tan bize yazın.`}
+  ogGorsel={gorsel}
+  jsonLd={jsonLd}
+>
+  <KatalogBandi aktif={kategori.id} />
+  <section class="bolum">
+    <div class="kapsayici">
+      <Breadcrumb adimlar={breadcrumb} />
+      <div class="urun">
+        <figure class="urun__gorsel">
+          {
+            gorsel ? (
+              <Picture
+                src={gorsel}
+                alt={gorselAlt(urun)}
+                formats={['avif', 'webp']}
+                widths={[480, 720, 960, 1200]}
+                sizes="(max-width: 860px) 100vw, 580px"
+                loading="eager"
+                fetchpriority="high"
+              />
+            ) : (
+              <Yertutucu ad={ad} />
+            )
+          }
+          {gorsel && stok_gorsel && <figcaption>Temsili görsel</figcaption>}
+        </figure>
+
+        <div class="urun__bilgi">
+          <h1>{ad}</h1>
+          {latince && <p class="urun__latince">{latince}</p>}
+          {!stokta && <p><span class="rozet">Şu an stokta yok, WhatsApp'tan sorun</span></p>}
+          {aciklama && <p class="urun__aciklama">{aciklama}</p>}
+          {
+            rozetler.length > 0 && (
+              <ul class="urun__rozetler">
+                {rozetler.map((r) => (
+                  <li>
+                    <span>{r.etiket}</span> {r.deger}
+                  </li>
+                ))}
+              </ul>
+            )
+          }
+          <div class="metin-icerik"><Content /></div>
+          {!aciklama && <p class="urun__not">Çeşit, boy ve güncel durum bilgisi için bize WhatsApp'tan yazabilirsiniz.</p>}
+
+          <div class="urun__eylemler">
+            <a class="buton buton--whatsapp buton--buyuk" href={whatsapp('urun', ad)} rel="noopener" target="_blank">
+              <Ikon ad="whatsapp" /> WhatsApp'tan Sor
+            </a>
+            <a class="buton buton--cizgi buton--buyuk" href={`tel:${firma.cep_tel}`}>
+              <Ikon ad="telefon" /> Telefonla Ara
+            </a>
+          </div>
+          <p class="urun__kategori">
+            Kategori: <a href={`/cesitlerimiz/${kategori.id}`}>{kategori.data.ad}</a>
+            {altkategori && <> · <a href={`/cesitlerimiz/${kategori.id}/${altkategori.slug}`}>{altkategori.ad}</a></>}
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {
+    digerleri.length > 0 && (
+      <section class="bolum bolum--acik" aria-labelledby="diger-urunler">
+        <div class="kapsayici">
+          <div class="bolum__baslik">
+            <h2 id="diger-urunler">{kategori.data.ad} kategorisinden</h2>
+            <a href={`/cesitlerimiz/${kategori.id}`}>Tümünü gör</a>
+          </div>
+          <div class="izgara">
+            {digerleri.map((u) => <UrunKart urun={u} />)}
+          </div>
+        </div>
+      </section>
+    )
+  }
+</Base>
+
+<style>
+  .urun {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 3rem;
+    align-items: start;
+  }
+  .urun__gorsel {
+    margin: 0;
+  }
+  .urun__gorsel :global(img),
+  .urun__gorsel :global(.yertutucu) {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: var(--radius);
+  }
+  .urun__gorsel figcaption {
+    margin-top: 0.4rem;
+    font-size: 0.8rem;
+    color: var(--metin-soluk);
+  }
+  .urun__latince {
+    font-style: italic;
+    color: var(--metin-soluk);
+    margin-top: -0.25rem;
+  }
+  .urun__aciklama {
+    font-size: 1.1rem;
+  }
+  .urun__rozetler {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.25rem;
+  }
+  .urun__rozetler li {
+    background: var(--yesil-100);
+    border-radius: 999px;
+    padding: 0.35rem 0.85rem;
+    font-size: 0.9rem;
+  }
+  .urun__rozetler span {
+    font-weight: 700;
+    color: var(--yesil-700);
+  }
+  .urun__not {
+    color: var(--metin-soluk);
+  }
+  .urun__eylemler {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-block: 1.5rem;
+  }
+  .urun__kategori {
+    font-size: 0.95rem;
+    color: var(--metin-soluk);
+  }
+  @media (max-width: 860px) {
+    .urun {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+  }
+</style>

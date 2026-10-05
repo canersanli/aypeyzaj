@@ -1,0 +1,26 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import ProjeKart from '../../components/ProjeKart.astro';
+import IletisimBandi from '../../components/IletisimBandi.astro';
+import { projeleriGetir } from '../../lib/site';
+
+const projeler = await projeleriGetir();
+---
+
+<Base
+  baslik="Galeri | Ay Peyzaj Projeleri Bartın"
+  aciklama="Ay Peyzaj'ın Bartın'da yaptığı peyzaj, bahçe düzenleme ve taş döşeme projeleri. Kendi projeniz için WhatsApp'tan bize yazın."
+>
+  <section class="bolum">
+    <div class="kapsayici">
+      <Breadcrumb adimlar={[{ ad: 'Galeri' }]} />
+      <h1>Galeri</h1>
+      <p class="giris">Yaptığımız işlerden örnekler. Proje fotoğraflarımızı yakında bu sayfaya ekleyeceğiz.</p>
+      <div class="izgara izgara--genis">
+        {projeler.map((p) => <ProjeKart proje={p} />)}
+      </div>
+    </div>
+  </section>
+  <IletisimBandi baslik="Bahçeniz için konuşalım" />
+</Base>

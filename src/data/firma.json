@@ -1,0 +1,27 @@
+{
+  "ticari_ad": "Ay Peyzaj ve Çiçekçilik",
+  "kisa_ad": "Ay Peyzaj",
+  "slogan": "Tasarımdan bakıma, her adımda yanınızdayız.",
+  "adres": "Şiremirçavuş Mah. 792. Sok. No:3 Bartın Merkez",
+  "adres_sokak": "Şiremirçavuş Mah. 792. Sok. No:3",
+  "sehir": "Bartın",
+  "ilce": "Merkez",
+  "harita": "https://maps.app.goo.gl/NqAYRqS9cGdVW4956",
+  "cep": "0 542 226 16 44",
+  "cep_tel": "+905422261644",
+  "sabit": "0 378 227 60 10",
+  "sabit_tel": "+903782276010",
+  "whatsapp": "https://wa.me/905422261644",
+  "whatsapp_teyit_edildi": false,
+  "eposta": "aycicekcilik@hotmail.com",
+  "instagram": "https://www.instagram.com/aypeyzajbartin/",
+  "facebook": "https://www.facebook.com/p/AY-Peyzaj-%C3%87i%C3%A7ek%C3%A7ilik-100063632947020/",
+  "web": "https://aypeyzaj.com",
+  "calisma_saatleri": "",
+  "mesajlar": {
+    "genel": "Merhaba, web sitenizden ulaşıyorum. Bilgi almak istiyorum.",
+    "urun": "Merhaba, web sitenizdeki \"{ad}\" hakkında bilgi almak istiyorum.",
+    "hizmet": "Merhaba, \"{ad}\" hizmetiniz hakkında bilgi almak istiyorum.",
+    "teklif": "Merhaba, bahçem için peyzaj teklifi almak istiyorum."
+  }
+}
